@@ -1,0 +1,20 @@
+{
+    "compilerOptions": {
+        "jsx": "react-jsx",
+        "esModuleInterop": true,
+        "baseUrl": "src",
+        "noEmit": true,
+        "allowImportingTsExtensions": true
+    },
+    "settings": {
+        "react": {
+            "version": "detect"
+        }
+    },
+    "lib": ["esnext", "DOM"],
+
+    "include": [
+        "src",
+        "src/components/all-constants.jsx"
+    ]
+}

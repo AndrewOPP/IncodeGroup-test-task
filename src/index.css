@@ -1,5 +1,10 @@
 @import-normalize; /* bring in normalize.css styles */
 
+@font-face {
+  font-family: 'MyFont';
+  src: url('/fonts/clone-rounded-latn-bd.otf') format('opentype');
+}
+
 body {
   margin: 0;
   font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
@@ -12,4 +17,10 @@ body {
 code {
   font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
     monospace;
+}
+
+p {
+  font-size: 24px;
+  margin: 0;
+  font-family: 'MyFont';
 }

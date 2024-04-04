@@ -1,0 +1,30 @@
+export interface Issue {
+  active_lock_reason: any;
+  assignee?: Record<string, any>;
+  assignees: Record<string, any>[];
+  author_association: string;
+  body: string;
+  closed_at?: any;
+  comments: number;
+  comments_url: string;
+  created_at: string;
+  events_url: string;
+  html_url: string;
+  id: number;
+  labels: string[];
+  labels_url: string;
+  locked: boolean;
+  milestone: any;
+  node_id: string;
+  number: number;
+  performed_via_github_app: any;
+  reactions: any;
+  repository_url: string;
+  state: string;
+  state_reason: any;
+  timeline_url: string;
+  title: string;
+  updated_at: string;
+  url: string;
+  user: any;
+}
