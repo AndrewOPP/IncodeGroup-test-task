@@ -1,1 +1,3 @@
-export const selectAllIssues = (state): any[] => state.issues;
+import { Issue } from 'types/types';
+
+export const selectAllIssues = (state): Issue[] => state.issues;

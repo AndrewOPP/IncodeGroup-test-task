@@ -1,12 +1,37 @@
+import { IssueCard } from 'components/IssueCard/IssueCard';
 import { Issue } from 'types/types';
+import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
+import { SortableContext, useSortable } from '@dnd-kit/sortable';
+import { useMemo } from 'react';
 
 type Props = {
   issues: Issue[];
   title: string;
+  id: string;
 };
 
-export const Column: React.FC<Props> = ({ title, issues }) => {
-  debugger;
+export const Column: React.FC<Props> = ({ title, issues, id }) => {
+  // const [enabled] = useStrictDroppable(isYourDataLoading);
+
+  const issuesIds = useMemo(() => {
+    return issues.map(issue => issue.id);
+  }, [issues]);
+
+  const {
+    setNodeRef,
+    attributes,
+    listeners,
+    transform,
+    transition,
+    isDragging,
+  } = useSortable({
+    id: id,
+    data: {
+      type: 'Column',
+      title,
+    },
+  });
+
   return (
     <div>
       <p
@@ -18,52 +43,25 @@ export const Column: React.FC<Props> = ({ title, issues }) => {
       >
         {title}
       </p>
-      <div
+
+      <ul
+        ref={setNodeRef}
         style={{
+          listStyle: 'none',
           width: '350px',
           minHeight: '550px',
-          backgroundColor: 'lightgray',
+          backgroundColor: '#ced4da',
           padding: '20px',
+          border: '1px solid black',
+          borderRadius: '6px',
         }}
       >
-        {issues.map((issue, index) => {
-          return (
-            <div
-              key={index}
-              style={{
-                border: '1px solid black',
-                borderRadius: '8px',
-                padding: '20px',
-                marginBottom: '15px',
-              }}
-            >
-              <p>{issue.title}</p>
-              <div
-                style={{
-                  display: 'flex',
-                  gap: '20px',
-                  alignItems: 'center',
-                  width: '100%',
-                }}
-              >
-                <p>{`#` + issue.number}</p>
-                <p>{issue.created_at}</p>
-              </div>
-              <div
-                style={{
-                  display: 'flex',
-                  gap: '20px',
-                  alignItems: 'center',
-                  width: '100%',
-                }}
-              >
-                <p>{issue.user.login}</p>
-                <p>{issue.comments}</p>
-              </div>
-            </div>
-          );
-        })}
-      </div>
+        <SortableContext items={issuesIds}>
+          {issues.map(issue => {
+            return <IssueCard key={issue.id} issue={issue} />;
+          })}
+        </SortableContext>
+      </ul>
     </div>
   );
 };
