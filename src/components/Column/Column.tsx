@@ -24,7 +24,7 @@ export const Column: React.FC<Props> = ({ title, issues, id }) => {
   });
 
   return (
-    <div>
+    <div data-testid="column">
       <StyledTitle as="h1">{title}</StyledTitle>
 
       <StyledList ref={setNodeRef}>
