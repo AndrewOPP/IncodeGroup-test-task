@@ -27,5 +27,9 @@ p {
 
 .cardP {
   font-size: 16px;
-  color: gray;
+  color: #a6abaf;
+}
+
+.custom-piled-segment .ui.segment.piled {
+  box-shadow: 0 2px 5px rgba(black, 0.2);
 }

@@ -4,28 +4,26 @@ import { selectAllIssues } from '../../redux/issues/issuesSelectors';
 import {
   DndContext,
   DragEndEvent,
-  DragOverEvent,
   DragOverlay,
   DragStartEvent,
   PointerSensor,
   useSensor,
   useSensors,
 } from '@dnd-kit/core';
-import { useEffect, useLayoutEffect, useMemo, useState } from 'react';
-import { SortableContext, arrayMove } from '@dnd-kit/sortable';
-import { setRightIssue } from '../../helpers/setRightIssue.js';
-import { changeIssuesStatus } from '../../helpers/changeIssuesStatus.js';
+import { useEffect, useState } from 'react';
+import { arrayMove } from '@dnd-kit/sortable';
+import { changeIssuesStatus } from '../../helpers/changeIssuesStatus.ts';
 import { createPortal } from 'react-dom';
 import { IssueCard } from 'components/IssueCard/IssueCard.tsx';
 import { useDispatch } from 'react-redux';
 import { updateIssues } from '../../redux/issues/issuesSlice.js';
 import { Issue } from 'types/types.js';
-import { log } from 'console';
+import { ColumnsWrapper } from './ColumnsView.styled.tsx';
 
 export const ColumnsView = () => {
   const issues = useSelector(selectAllIssues);
   const [activeIssue, setActiveIssue] = useState<Issue | null>(null);
-  const [currentIssues, setCurrentIssues] = useState([]);
+  const [currentIssues, setCurrentIssues] = useState<Issue[]>([]);
   const dispatch = useDispatch();
 
   useEffect(() => {
@@ -39,44 +37,15 @@ export const ColumnsView = () => {
       const localeIssues = JSON.parse(
         localStorage.getItem(issues[0].repository_url)
       );
-      console.log(localeIssues, 'locale');
 
       setCurrentIssues(localeIssues);
     }
   }, [issues]);
 
-  useEffect(() => {
-    // if (!localStorage.getItem(issues[0].repository_url)) {
-    //   console.log(localStorage.getItem(issues[0].repository_url));
-    //   localStorage.setItem(
-    //     issues[0].repository_url,
-    //     JSON.stringify(currentIssues)
-    //   );
-    // } else {
-    //   setCurrentIssues(
-    //     JSON.parse(localStorage.getItem(issues[0].repository_url))
-    //   );
-    // }
-    // if (localStorage.getItem(issues[0].repository_url)) {
-    //   const localeIssues = JSON.parse(
-    //     localStorage.getItem(issues[0].repository_url)
-    //   );
-    //   console.log(localeIssues, 'locale');
-    //   setCurrentIssues(localeIssues);
-    //   return;
-    // }
-  }, [issues]);
-
-  // useEffect(() => {
-  //   if (issues.length > 1) {
-  //     localStorage.setItem(issues[0].repository_url, JSON.stringify(issues));
-  //   }
-  // }, [issues]);
-
   const sensors = useSensors(
     useSensor(PointerSensor, {
       activationConstraint: {
-        distance: 10,
+        distance: 20,
       },
     })
   );
@@ -119,6 +88,7 @@ export const ColumnsView = () => {
             dispatch(
               updateIssues(arrayMove(updatedIssues, activeIndex, overIndex - 1))
             );
+
             return;
           } catch (error) {
             console.log(error);
@@ -142,10 +112,14 @@ export const ColumnsView = () => {
       );
       localStorage.setItem(
         issues[0].repository_url,
-        JSON.stringify(arrayMove(updatedIssues, activeIndex, activeIndex))
+        JSON.stringify(
+          arrayMove(updatedIssues, activeIndex, updatedIssues.length - 1)
+        )
       );
       dispatch(
-        updateIssues(arrayMove(updatedIssues, activeIndex, activeIndex))
+        updateIssues(
+          arrayMove(updatedIssues, activeIndex, updatedIssues.length - 1)
+        )
       );
     }
   };
@@ -158,8 +132,6 @@ export const ColumnsView = () => {
 
   const onDragEnd = (event: DragEndEvent) => {
     setActiveIssue(null);
-
-    console.log();
 
     const { active, over } = event;
     if (!over) return;
@@ -180,14 +152,7 @@ export const ColumnsView = () => {
       onDragOver={onDragOver}
       onDragStart={onDragStart}
     >
-      <div
-        style={{
-          display: 'flex',
-          gap: '15px',
-          flexWrap: 'wrap',
-          justifyContent: 'center',
-        }}
-      >
+      <ColumnsWrapper>
         <Column
           issues={currentIssues.filter(({ status }) => status === 'ToDo')}
           title={'ToDo'}
@@ -205,7 +170,7 @@ export const ColumnsView = () => {
           title={'Done'}
           id={'Done'}
         />
-      </div>
+      </ColumnsWrapper>
       {createPortal(
         <DragOverlay>
           {activeIssue && <IssueCard issue={activeIssue} />}

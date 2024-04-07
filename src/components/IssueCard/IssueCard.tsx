@@ -1,7 +1,13 @@
 import { Issue } from 'types/types';
-import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import { useSortable } from '@dnd-kit/sortable';
 import { CSS } from '@dnd-kit/utilities';
+import {
+  StyledCommendsBlock,
+  StyledDataInfo,
+  StyledIssueTitle,
+  StyledLi,
+  StyledLiPlaceHolder,
+} from './IssuesCard.styled';
 type Props = {
   issue: Issue;
 };
@@ -29,35 +35,21 @@ export const IssueCard: React.FC<Props> = ({ issue }) => {
       type: 'Issue',
       issue,
     },
-    // disabled: editMode,
   });
 
   if (isDragging) {
     return (
-      <li
+      <StyledLiPlaceHolder
         ref={setNodeRef}
         style={{
-          opacity: '60%',
-          height: '132px',
-          backgroundColor: 'white',
-          transition,
           transform: CSS.Transform.toString(transform),
-          border: '1px solid black',
-          borderRadius: '8px',
-          padding: '20px',
-          marginBottom: '15px',
         }}
-      ></li>
+      />
     );
   }
   const style = {
     transition,
     transform: CSS.Transform.toString(transform),
-    border: '1px solid black',
-    borderRadius: '8px',
-    padding: '20px',
-    marginBottom: '15px',
-    backgroundColor: 'white',
   };
 
   const findDateDiff = (): number => {
@@ -69,40 +61,20 @@ export const IssueCard: React.FC<Props> = ({ issue }) => {
   };
 
   return (
-    <li ref={setNodeRef} style={style} {...attributes} {...listeners}>
-      <p
-        style={{
-          fontSize: '20px',
-        }}
-      >
-        {title}
-      </p>
-      <div
-        style={{
-          display: 'flex',
-          gap: '20px',
-          alignItems: 'center',
-          width: '100%',
-        }}
-      >
+    <StyledLi ref={setNodeRef} style={style} {...attributes} {...listeners}>
+      <StyledIssueTitle>{title}</StyledIssueTitle>
+      <StyledDataInfo>
         <p className="cardP">{`#` + number}</p>
         <p className="cardP">
           {findDateDiff()
             ? `opened ${findDateDiff()} days ago`
             : `opened today`}
         </p>
-      </div>
-      <div
-        style={{
-          display: 'flex',
-          gap: '20px',
-          alignItems: 'center',
-          width: '100%',
-        }}
-      >
+      </StyledDataInfo>
+      <StyledCommendsBlock>
         <p className="cardP">{login}</p>
         <p className="cardP">Comments: {comments}</p>
-      </div>
-    </li>
+      </StyledCommendsBlock>
+    </StyledLi>
   );
 };

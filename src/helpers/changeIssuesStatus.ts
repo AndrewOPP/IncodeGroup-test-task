@@ -1,9 +1,12 @@
+import { Issue } from 'types/types';
+
 export const changeIssuesStatus = (
-  activeIssue,
-  over,
-  allIssues,
-  changeType
-) => {
+  activeIssue: Issue,
+  // eslint-disable-next-line
+  over: any,
+  allIssues: Issue[],
+  changeType: 'issue' | 'column'
+): Issue[] => {
   if (changeType === 'issue') {
     return allIssues.map(issue => {
       if (issue.id === activeIssue.id) {

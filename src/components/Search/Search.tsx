@@ -1,17 +1,27 @@
 import axios from 'axios';
 import { setIssues } from '../../redux/issues/issuesSlice.js';
 import { useDispatch } from 'react-redux';
-import { Button, Container, Form, Input } from 'semantic-ui-react';
 import { FormEvent, useState } from 'react';
 import { User } from 'types/types.js';
-import { selectAllIssues } from '../../redux/issues/issuesSelectors.tsx';
-import { useSelector } from 'react-redux';
+import {
+  RepoInfoStars,
+  RepoInfoStarsWrapper,
+  RepoInfoText,
+  RepoInfoWrapper,
+  StyledInput,
+  StyledSearchButton,
+  StyledSearchForm,
+  StyledSearchFormWrapper,
+} from './Search.styled.tsx';
+import { Icon } from 'semantic-ui-react';
 
 export const Search: React.FC = () => {
   const [repoOwnerData, setRepoOwnerData] = useState<User>(null);
   const [splitedRepoUrl, setSplitedRepoUrl] = useState<string[]>([]);
-  const currentIssues = useSelector(selectAllIssues);
+  const [repoStarsCounter, setRepoStarsCounter] = useState<number>(null);
+
   const dispatch = useDispatch();
+
   const onSearch = async (e: FormEvent<HTMLFormElement>): Promise<void> => {
     e.preventDefault();
 
@@ -23,13 +33,14 @@ export const Search: React.FC = () => {
         }/issues?state=all`
       );
 
+      const repo = await axios.get(repoIssues.data[0].repository_url);
+
+      setRepoStarsCounter(repo.data.stargazers_count);
       setRepoOwnerData(repoIssues.data[0]?.user);
       setSplitedRepoUrl(userInput.split('/'));
       if (!localStorage.getItem(repoIssues.data[0].repository_url)) {
         dispatch(setIssues(repoIssues.data));
       } else {
-        console.log(12312);
-
         const localeIssues = JSON.parse(
           localStorage.getItem(repoIssues.data[0].repository_url)
         );
@@ -40,51 +51,37 @@ export const Search: React.FC = () => {
     }
   };
 
-  // value="https://github.com/AndrewOpp/Test-task"
   return (
-    <div
-      style={{
-        display: 'flex',
-        justifyContent: 'center',
-        flexDirection: 'column',
-        alignItems: 'flex-start',
-      }}
-    >
-      <form
-        style={{ width: '100%', height: 30, display: 'flex', gap: 15 }}
-        onSubmit={e => onSearch(e)}
-      >
-        <input
-          style={{ width: '100%', fontSize: 14 }}
-          // value="https://github.com/AndrewOpp/Test-task"
-          placeholder="Enter repo link"
-          type="text"
-        />
-        <button
-          style={{
-            width: '20%',
-            fontSize: 14,
-            backgroundColor: 'transparent',
-            cursor: 'pointer',
-          }}
-          type="submit"
-        >
-          Load issues
-        </button>
-      </form>
+    <StyledSearchFormWrapper>
+      <StyledSearchForm onSubmit={e => onSearch(e)}>
+        <StyledInput required placeholder="Enter repo link" type="text" />
+        <StyledSearchButton type="submit">Load issues</StyledSearchButton>
+      </StyledSearchForm>
       {repoOwnerData && (
-        <div style={{ display: 'flex', marginTop: '10px' }}>
-          <p style={{ fontSize: '14px', color: 'blue' }}>
-            <a href={repoOwnerData.html_url}>
+        <RepoInfoWrapper>
+          <RepoInfoText>
+            <a href={`https://github.com/${splitedRepoUrl[3]}`}>
               {' '}
-              {repoOwnerData?.login ? `${repoOwnerData?.login} > ` : null}
+              {splitedRepoUrl[splitedRepoUrl.length - 2]
+                ? `${splitedRepoUrl[splitedRepoUrl.length - 2]} > `
+                : null}
             </a>
+
             <a href={splitedRepoUrl.join('/')}>
               {splitedRepoUrl[splitedRepoUrl.length - 1]}
             </a>
-          </p>
-        </div>
+          </RepoInfoText>
+          <RepoInfoStarsWrapper>
+            <Icon size="tiny" color="yellow" name="star" />
+            <RepoInfoStars>
+              {' '}
+              {repoStarsCounter >= 1000
+                ? `${Math.floor(repoStarsCounter / 1000)} K stars`
+                : `${repoStarsCounter} stars`}
+            </RepoInfoStars>
+          </RepoInfoStarsWrapper>
+        </RepoInfoWrapper>
       )}
-    </div>
+    </StyledSearchFormWrapper>
   );
 };

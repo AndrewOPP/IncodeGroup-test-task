@@ -1,8 +1,8 @@
 import { IssueCard } from 'components/IssueCard/IssueCard';
 import { Issue } from 'types/types';
-import { DragDropContext, Draggable, Droppable } from 'react-beautiful-dnd';
 import { SortableContext, useSortable } from '@dnd-kit/sortable';
 import { useMemo } from 'react';
+import { StyledList, StyledTitle } from './Column.styled';
 
 type Props = {
   issues: Issue[];
@@ -11,20 +11,11 @@ type Props = {
 };
 
 export const Column: React.FC<Props> = ({ title, issues, id }) => {
-  // const [enabled] = useStrictDroppable(isYourDataLoading);
-
   const issuesIds = useMemo(() => {
     return issues.map(issue => issue.id);
   }, [issues]);
 
-  const {
-    setNodeRef,
-    attributes,
-    listeners,
-    transform,
-    transition,
-    isDragging,
-  } = useSortable({
+  const { setNodeRef } = useSortable({
     id: id,
     data: {
       type: 'Column',
@@ -34,34 +25,15 @@ export const Column: React.FC<Props> = ({ title, issues, id }) => {
 
   return (
     <div>
-      <p
-        style={{
-          textAlign: 'center',
-          fontSize: '36px',
-          marginBottom: '20px',
-        }}
-      >
-        {title}
-      </p>
+      <StyledTitle as="h1">{title}</StyledTitle>
 
-      <ul
-        ref={setNodeRef}
-        style={{
-          listStyle: 'none',
-          width: '350px',
-          minHeight: '550px',
-          backgroundColor: '#ced4da',
-          padding: '20px',
-          border: '1px solid black',
-          borderRadius: '6px',
-        }}
-      >
+      <StyledList ref={setNodeRef}>
         <SortableContext items={issuesIds}>
           {issues.map(issue => {
             return <IssueCard key={issue.id} issue={issue} />;
           })}
         </SortableContext>
-      </ul>
+      </StyledList>
     </div>
   );
 };
